@@ -22,7 +22,7 @@ projects:
         remote: upstream
         revision: main
       remotes:
-        upstream: https://github.com/lab-monkeys/developer-intelligence-prototype.git
+        upstream: https://github.com/dora-metrics/pelorus-ui.git
   - name: dev-workspace
     git:
       checkoutFrom:
@@ -33,7 +33,7 @@ projects:
 components:
 - name: dev-tools
   container: 
-    image: quay.io/etsauer/developer-base:java21-node20-python311-1.0
+    image: quay.io/redhat-cop/devspaces-java21-node20-python311
     memoryLimit: 6Gi
     mountSources: true
     env:
