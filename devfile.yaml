@@ -61,6 +61,10 @@ components:
         protocol: https
         name: quarkus-debug
         targetPort: 5005
+      - exposure: public
+        protocol: https
+        name: mockserver
+        targetPort: 9090
 - volume:
     size: 10Gi
   name: projects
@@ -104,6 +108,18 @@ commands:
     component: dev-tools
     workingDir: "${PROJECTS_ROOT}/dev-workspace"
   id: init-env
+- exec:
+    commandLine: "./mockserver/scripts/load.sh"
+    component: dev-tools
+    workingDir: "${PROJECTS_ROOT}/dev-workspace"
+    label: "Reload Mock Server Data"
+  id: load-mock-data
+- exec:
+    commandLine: "java -jar mockserver.jar -serverPort 9090"
+    component: dev-tools
+    workingDir: "${PROJECTS_ROOT}/dev-workspace"
+    label: "Start Prometheus mock server"
+  id: start-mock-server
 events:
   preStart:
     - cp-oc-cli

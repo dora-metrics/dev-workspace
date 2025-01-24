@@ -1,0 +1,49 @@
+[{
+    "httpRequest" : {
+      "path" : "/some/path"
+    },
+    "httpResponse" : {
+      "body" : "some_response_body"
+    }
+},
+{
+    "httpRequest" : {
+      "path" : "/query",
+      "method": "GET"
+    },
+    "httpResponse" : {
+      "body" : {
+        "status": "success",
+        "data": {
+          "resultType": "fake",
+          "result" :
+          [
+            { "metric": {
+              "name": "deploy_timestamp",
+              "app": "shop",
+              "commit": "commitsha",
+              "image_sha": "sha256:blehdik",
+              "issue_number": "3"
+              },
+              "values": [
+                [ 1435781451.781, "0" ]
+              ],
+              "value": [ 1435781451.781, "0" ]
+            },
+            { "metric": {
+              "name": "deploy_timestamp",
+              "app": "booking",
+              "commit": "commitsha",
+              "image_sha": "sha256:blehdik",
+              "issue_number": "3"
+              },
+              "values": [
+                [ 1435781451.781, "0" ]
+              ],
+              "value": [ 1435781451.781, "0" ]
+            }
+          ]
+        }
+      }
+    }
+}]
