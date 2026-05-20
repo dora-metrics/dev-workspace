@@ -61,6 +61,11 @@ components:
         protocol: https
         name: quarkus-debug
         targetPort: 5005
+- name: tools
+  container:
+    image: quay.io/devfile/universal-developer-image:ubi10-latest
+    mountSources: true
+    memoryLimit: 4G
 - volume:
     size: 10Gi
   name: projects
@@ -104,6 +109,65 @@ commands:
     component: dev-tools
     workingDir: "${PROJECTS_ROOT}/dev-workspace"
   id: init-env
+- id: gcloud-init
+  exec:
+    label: "1. Google Cloud CLI - Initialization"
+    commandLine: gcloud init --console-only
+    component: tools
+
+- id: gcloud-auth-login
+  exec:
+    label: "2. Google Cloud CLI - Set up default authentication"
+    commandLine: gcloud auth application-default login --no-launch-browser
+    component: tools
+
+- id: gcloud-auth-set-quota-project
+  exec:
+    label: "3. Google Cloud CLI - Set Quota Project"
+    commandLine: gcloud auth application-default set-quota-project cloudability-it-gemini
+    component: tools
+
+- id: create-gcloud-adc-secret
+  exec:
+    label: "4. Create Google Cloud ADC Secret"
+    commandLine: |
+      kubectl create secret generic gcloud-adc --from-file=adc.json=$HOME/.config/gcloud/application_default_credentials.json && \
+      kubectl label secret gcloud-adc controller.devfile.io/mount-to-devworkspace=true controller.devfile.io/watch-secret=true --overwrite
+    component: tools
+
+- id: annotate-gcloud-adc-secret
+  exec:
+    label: "5. Annotate Google Cloud ADC Secret"
+    commandLine: |
+      kubectl annotate secret gcloud-adc controller.devfile.io/mount-path=/credentials controller.devfile.io/mount-as=file --overwrite
+    component: tools
+
+- id: setup-environment-variables
+  exec:
+    label: "6. Set up environment variables ConfigMap"
+    commandLine: |
+      source scripts/setup-claude-vertex-env.sh
+    component: dev-tools
+
+- id: annotate-environment-variables
+  exec:
+    label: "7. Annotate environment variables ConfigMap"
+    commandLine: |
+      kubectl annotate configmap ai-tools-env controller.devfile.io/mount-as=env --overwrite
+    component: tools
+
+- id: install-claude
+  exec:
+    label: 8. Install Claude CLI (Optional)
+    commandLine: curl -fsSL https://claude.ai/install.sh -o claude-install.sh && chmod +x claude-install.sh && ./claude-install.sh
+    component: tools
+
+- id: add-dataverse-mcp
+  exec:
+    label: 9. Add Dataverse MCP (Optional)
+    commandLine: claude mcp add --transport http dataverse https://mcp.dataverse.redhat.com/mcp/
+    component: tools
+
 events:
   preStart:
     - cp-oc-cli

@@ -19,6 +19,7 @@
 	],
 	"extensions": {
 		"recommendations": [
+			"anthropic.claude-code",
 			"redhat.vscode-yaml",
 			"redhat.java",
 			"redhat.vscode-quarkus",
